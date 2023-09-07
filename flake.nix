@@ -16,9 +16,15 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {inherit system;};
+      # see https://github.com/nix-community/poetry2nix/tree/master#api for more functions and examples.
+      inherit (poetry2nix.legacyPackages.${system}) mkPoetryEnv;
+      pythonEnv = mkPoetryEnv {
+        projectDir = ./.;
+        preferWheels = true;
+      };
     in {
       devShells.default = pkgs.mkShell {
-        buildInputs = [pkgs.poetry];
+        buildInputs = [pkgs.poetry pythonEnv];
       };
       formatter = pkgs.alejandra;
     });
